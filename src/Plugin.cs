@@ -25,6 +25,7 @@ namespace SptSway
             Log = Logger;
 
             SwayConfig.Bind(Config);
+            SettingsMigration.Run(Log);
 
             // Ticking the preset box in the F12 menu is the only way to apply
             // one, so it acts as a button and unticks itself.

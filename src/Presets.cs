@@ -47,6 +47,7 @@ namespace SptSway
         {
             SwayConfig.MasterIntensity.Value = 1f;
             SwayConfig.GlobalTimeScale.Value = 1f;
+            SwayConfig.OutputSmoothing.Value = 12f;
             SwayConfig.AdsMaster.Value = 1f;
             SwayConfig.HipMaster.Value = 1f;
             SwayConfig.KeepVanillaSway.Value = true;
@@ -58,16 +59,16 @@ namespace SptSway
             SwayConfig.RespIrregularity.Value = 0.15f;
 
             SwayConfig.HeartEnabled.Value = true;
-            SwayConfig.HeartAmplitude.Value = 1f;
-            SwayConfig.HeartSystolicSharpness.Value = 7f;
+            SwayConfig.HeartAmplitude.Value = 0.8f;
+            SwayConfig.HeartSystolicSharpness.Value = 4.5f;
             SwayConfig.HeartDicroticStrength.Value = 0.35f;
 
             SwayConfig.TremorEnabled.Value = true;
-            SwayConfig.TremorAmplitude.Value = 1f;
+            SwayConfig.TremorAmplitude.Value = 0.45f;
             SwayConfig.TremorFrequency.Value = 9.5f;
 
             SwayConfig.DriftEnabled.Value = true;
-            SwayConfig.DriftAmplitude.Value = 1f;
+            SwayConfig.DriftAmplitude.Value = 0.7f;
 
             SwayConfig.InertiaEnabled.Value = true;
             SwayConfig.InertiaStrength.Value = 1f;
@@ -77,7 +78,7 @@ namespace SptSway
             SwayConfig.FatigueEnabled.Value = true;
             SwayConfig.InjuryEnabled.Value = true;
             SwayConfig.ShotEnabled.Value = true;
-            SwayConfig.CameraCoupling.Value = 0.35f;
+            SwayConfig.CameraCoupling.Value = 0.10f;
         }
 
         private static void Vanilla()
@@ -96,10 +97,11 @@ namespace SptSway
         private static void Arcade()
         {
             SwayConfig.MasterIntensity.Value = 0.45f;
+            SwayConfig.OutputSmoothing.Value = 9f;
             SwayConfig.RespAmplitude.Value = 0.6f;
-            SwayConfig.HeartAmplitude.Value = 0.35f;
-            SwayConfig.TremorAmplitude.Value = 0.4f;
-            SwayConfig.DriftAmplitude.Value = 0.5f;
+            SwayConfig.HeartAmplitude.Value = 0.3f;
+            SwayConfig.TremorAmplitude.Value = 0.25f;
+            SwayConfig.DriftAmplitude.Value = 0.4f;
             SwayConfig.InertiaStrength.Value = 0.55f;
             SwayConfig.InertiaDamping.Value = 0.95f;   // settles fast, barely overshoots
             SwayConfig.TremorFatigueGain.Value = 0.8f;
@@ -108,7 +110,7 @@ namespace SptSway
             SwayConfig.ExhaustedMultiplier.Value = 1.25f;
             SwayConfig.ArmFractureMultiplier.Value = 1.4f;
             SwayConfig.ArmBlackedMultiplier.Value = 1.2f;
-            SwayConfig.CameraCoupling.Value = 0.15f;
+            SwayConfig.CameraCoupling.Value = 0.05f;
             SwayConfig.ShotGain.Value = 0.05f;
         }
 
@@ -117,11 +119,11 @@ namespace SptSway
             SwayConfig.MasterIntensity.Value = 1.45f;
             SwayConfig.RespAmplitude.Value = 1.3f;
             SwayConfig.RespRateExhausted.Value = 38f;
-            SwayConfig.HeartAmplitude.Value = 1.5f;
+            SwayConfig.HeartAmplitude.Value = 1.15f;
             SwayConfig.HeartExertionGain.Value = 2.4f;
-            SwayConfig.TremorAmplitude.Value = 1.4f;
+            SwayConfig.TremorAmplitude.Value = 0.75f;
             SwayConfig.TremorFatigueGain.Value = 3.4f;
-            SwayConfig.DriftAmplitude.Value = 1.25f;
+            SwayConfig.DriftAmplitude.Value = 0.95f;
             SwayConfig.InertiaStrength.Value = 1.5f;
             SwayConfig.InertiaDamping.Value = 0.45f;   // swings further, takes longer to settle
             SwayConfig.StaminaInfluence.Value = 2f;
@@ -131,23 +133,24 @@ namespace SptSway
             SwayConfig.ArmFractureMultiplier.Value = 3.2f;
             SwayConfig.ArmBlackedMultiplier.Value = 2.2f;
             SwayConfig.ShotGain.Value = 0.2f;
-            SwayConfig.CameraCoupling.Value = 0.5f;
+            SwayConfig.CameraCoupling.Value = 0.2f;
         }
 
         private static void Cinematic()
         {
             SwayConfig.MasterIntensity.Value = 1.9f;
             SwayConfig.GlobalTimeScale.Value = 0.75f;   // everything slower and more legible
+            SwayConfig.OutputSmoothing.Value = 7f;      // deliberately soft, this one is for the camera
             SwayConfig.RespAmplitude.Value = 2.1f;
             SwayConfig.RespWaveformSharpness.Value = 0.4f;
-            SwayConfig.HeartAmplitude.Value = 1.8f;
-            SwayConfig.TremorAmplitude.Value = 0.6f;    // fine shake reads as noise on camera
-            SwayConfig.DriftAmplitude.Value = 2f;
+            SwayConfig.HeartAmplitude.Value = 1.4f;
+            SwayConfig.TremorAmplitude.Value = 0.3f;    // fine shake reads as noise on camera
+            SwayConfig.DriftAmplitude.Value = 1.4f;
             SwayConfig.InertiaStrength.Value = 2.2f;
             SwayConfig.InertiaFrequency.Value = 1.6f;
             SwayConfig.InertiaDamping.Value = 0.4f;
             SwayConfig.InertiaMaxDeflection.Value = 9f;
-            SwayConfig.CameraCoupling.Value = 0.85f;
+            SwayConfig.CameraCoupling.Value = 0.45f;
         }
 
         private static void Marksman()
@@ -157,16 +160,16 @@ namespace SptSway
             SwayConfig.RespAmplitude.Value = 1.1f;
             SwayConfig.RespPauseFraction.Value = 0.28f;   // longer natural firing window
             SwayConfig.RespHoldSuppression.Value = 0.05f; // holding breath really works
-            SwayConfig.HeartAmplitude.Value = 1.3f;
+            SwayConfig.HeartAmplitude.Value = 1.05f;
             SwayConfig.HeartAds.Value = 1.5f;
-            SwayConfig.TremorAmplitude.Value = 0.75f;
-            SwayConfig.TremorAds.Value = 1.1f;
-            SwayConfig.DriftAmplitude.Value = 0.9f;
+            SwayConfig.TremorAmplitude.Value = 0.35f;
+            SwayConfig.TremorAds.Value = 0.9f;
+            SwayConfig.DriftAmplitude.Value = 0.65f;
             SwayConfig.InertiaAds.Value = 0.35f;
             SwayConfig.MountedMultiplier.Value = 0.15f;
             SwayConfig.BipodMultiplier.Value = 0.08f;
             SwayConfig.ProneMultiplier.Value = 0.3f;
-            SwayConfig.CameraCoupling.Value = 0.25f;
+            SwayConfig.CameraCoupling.Value = 0.08f;
         }
     }
 }

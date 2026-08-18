@@ -38,6 +38,8 @@ namespace SptSway
         public static ConfigEntry<float>            HipMaster;
         public static ConfigEntry<float>            GlobalTimeScale;
         public static ConfigEntry<bool>             KeepVanillaSway;
+        public static ConfigEntry<float>            OutputSmoothing;
+        public static ConfigEntry<int>              Revision;
 
         // ================= 01 Respiration =================================
         public static ConfigEntry<bool>  RespEnabled;
@@ -113,6 +115,7 @@ namespace SptSway
         public static ConfigEntry<float> InertiaHip;
         public static ConfigEntry<float> InertiaMoveGain;
         public static ConfigEntry<float> InertiaTurnClamp;
+        public static ConfigEntry<float> InertiaInputSmoothing;
 
         // ================= 06 Weapon handling =============================
         public static ConfigEntry<float> ErgoHalfPoint;
@@ -225,6 +228,11 @@ namespace SptSway
             HipMaster = F(General, "Hipfire Multiplier", 1f, 0f, 5f, "Extra scale applied while hipfiring.");
             GlobalTimeScale = F(General, "Rate Multiplier", 1f, 0.1f, 4f,
                 "Speeds up or slows down every oscillator. Below 1 feels drowsy, above 1 feels jittery.");
+            OutputSmoothing = F(General, "Output Smoothing (Hz)", 12f, 0f, 60f,
+                "Low-pass on everything the model produces, before it reaches the springs. " +
+                "This is the anti-jitter knob: lower is smoother and eventually mushy, higher lets " +
+                "sharp detail like the pulse spike and the tremor through. 0 disables it entirely.");
+
             KeepVanillaSway = cfg.Bind(General, "Keep Vanilla Sway", true,
                 "Leave BSG's own sway running underneath. Turn off for a from-scratch feel driven only by this mod.");
 
@@ -254,12 +262,12 @@ namespace SptSway
             // ---- cardiac --------------------------------------------------
             HeartEnabled = cfg.Bind(Heart, "Enabled", true,
                 "Heartbeat pushed through the rifle. Small, sharp, and the thing people notice through a scope.");
-            HeartAmplitude = F(Heart, "Amplitude", 1f, 0f, 5f, "Size of the pulse kick.");
+            HeartAmplitude = F(Heart, "Amplitude", 0.8f, 0f, 5f, "Size of the pulse kick.");
             HeartRateRest  = F(Heart, "Resting BPM", 65f, 30f, 120f, "Heart rate with full stamina.");
             HeartRateMax   = F(Heart, "Max BPM", 165f, 60f, 220f, "Heart rate when spent.");
             HeartRateRise  = F(Heart, "Rate Rise Speed", 0.9f, 0.05f, 5f, "How fast the heart climbs under exertion, per second.");
             HeartRateFall  = F(Heart, "Rate Fall Speed", 0.25f, 0.02f, 5f, "How fast it comes back down. Slower than it climbs, as in life.");
-            HeartSystolicSharpness = F(Heart, "Systolic Sharpness", 7f, 1f, 24f,
+            HeartSystolicSharpness = F(Heart, "Systolic Sharpness", 4.5f, 1f, 24f,
                 "Higher makes each beat a tighter spike instead of a soft swell.");
             HeartDicroticStrength = F(Heart, "Dicrotic Notch", 0.35f, 0f, 1f,
                 "The smaller second bump of each beat, from the aortic valve closing. Subtle, but it is why a heartbeat does not read as a sine.");
@@ -275,11 +283,11 @@ namespace SptSway
             // ---- tremor ---------------------------------------------------
             TremorEnabled = cfg.Bind(Tremor, "Enabled", true,
                 "The 8-12 Hz shimmer every human hand has. Never still, never repeating.");
-            TremorAmplitude = F(Tremor, "Amplitude", 1f, 0f, 5f, "Size of the shimmer.");
+            TremorAmplitude = F(Tremor, "Amplitude", 0.45f, 0f, 5f, "Size of the shimmer.");
             TremorFrequency = F(Tremor, "Centre Frequency (Hz)", 9.5f, 1f, 30f, "Physiological tremor sits around 8-12 Hz.");
             TremorFrequencySpread = F(Tremor, "Frequency Spread", 0.35f, 0f, 1f,
                 "Detunes the layers so the tremor never locks into a pattern.");
-            TremorOctaves = cfg.Bind(Tremor, "Octaves", 3, new ConfigDescription(
+            TremorOctaves = cfg.Bind(Tremor, "Octaves", 2, new ConfigDescription(
                 "How many detuned noise layers to stack. More costs a little CPU and looks slightly finer.",
                 new AcceptableValueRange<int>(1, 6)));
             TremorFatigueGain = F(Tremor, "Fatigue Gain", 2.2f, 0f, 8f, "How much a spent shooter shakes compared to a fresh one.");
@@ -287,13 +295,13 @@ namespace SptSway
             TremorPitch = F(Tremor, "Pitch Weight", 1f, -3f, 3f, "Vertical share.");
             TremorYaw   = F(Tremor, "Yaw Weight", 0.95f, -3f, 3f, "Horizontal share.");
             TremorRoll  = F(Tremor, "Roll Weight", 0.45f, -3f, 3f, "Cant share.");
-            TremorAds   = F(Tremor, "ADS Multiplier", 1.3f, 0f, 3f, "Longer sight radius makes the same wobble far more visible.");
+            TremorAds   = F(Tremor, "ADS Multiplier", 1.05f, 0f, 3f, "Longer sight radius makes the same wobble far more visible.");
             TremorHip   = F(Tremor, "Hipfire Multiplier", 0.75f, 0f, 3f, "Hard to see without sights.");
 
             // ---- postural drift ------------------------------------------
             DriftEnabled = cfg.Bind(Postural, "Enabled", true,
                 "Standing balance drift. Sub-hertz, wide, and the reason a rested shooter still cannot hold a dot perfectly still.");
-            DriftAmplitude = F(Postural, "Amplitude", 1f, 0f, 5f, "Size of the wander.");
+            DriftAmplitude = F(Postural, "Amplitude", 0.7f, 0f, 5f, "Size of the wander.");
             DriftFrequency = F(Postural, "Frequency (Hz)", 0.28f, 0.02f, 3f, "Body sway lives around 0.2-0.5 Hz.");
             DriftPitch = F(Postural, "Pitch Weight", 0.7f, -3f, 3f, "Vertical share.");
             DriftYaw   = F(Postural, "Yaw Weight", 1f, -3f, 3f, "Horizontal share. Balance drift is wider than it is tall.");
@@ -318,6 +326,11 @@ namespace SptSway
             InertiaHip = F(Inertia, "Hipfire Multiplier", 1.2f, 0f, 3f, "Nothing to absorb it at the hip.");
             InertiaMoveGain = F(Inertia, "Movement Gain", 1f, 0f, 5f, "Inertia from the body accelerating, not just from turning.");
             InertiaTurnClamp = F(Inertia, "Turn Rate Clamp", 900f, 10f, 5000f, "Degrees per second of turn beyond which inertia stops growing. Keeps mouse flicks sane.");
+            InertiaInputSmoothing = F(Inertia, "Input Smoothing (Hz)", 9f, 0f, 60f,
+                "Low-pass on the measured turn rate before it drives the oscillator. " +
+                "Turn rate is a per-frame difference, so it carries the frame timing's own noise; " +
+                "without this the weapon twitches on a jitter in the frame clock rather than on your hand. " +
+                "0 disables it.");
 
             // ---- weapon handling ------------------------------------------
             ErgoHalfPoint = F(Weapon, "Ergonomics Half Point", 55f, 5f, 150f,
@@ -366,13 +379,13 @@ namespace SptSway
             ShotHeartRateKick   = F(Recoil, "Heart Rate Kick", 1.5f, 0f, 20f, "BPM added per shot. Firefights raise your pulse.");
 
             // ---- camera coupling ------------------------------------------
-            CameraCoupling = F(Coupling, "Master Camera Coupling", 0.35f, 0f, 2f,
+            CameraCoupling = F(Coupling, "Master Camera Coupling", 0.10f, 0f, 2f,
                 "How much sway moves the view instead of only the weapon. 0 keeps the crosshair still and moves the gun, 1 moves your head with it.");
-            CameraRespShare    = F(Coupling, "Respiration Share", 1f, 0f, 3f, "Breathing's share of camera coupling.");
-            CameraHeartShare   = F(Coupling, "Cardiac Share", 0.8f, 0f, 3f, "Pulse's share.");
-            CameraTremorShare  = F(Coupling, "Tremor Share", 0.35f, 0f, 3f, "Tremor's share. Keep this low or the view buzzes.");
-            CameraDriftShare   = F(Coupling, "Drift Share", 1f, 0f, 3f, "Postural drift's share.");
-            CameraInertiaShare = F(Coupling, "Inertia Share", 0.25f, 0f, 3f, "Inertia's share.");
+            CameraRespShare    = F(Coupling, "Respiration Share", 0.75f, 0f, 3f, "Breathing's share of camera coupling.");
+            CameraHeartShare   = F(Coupling, "Cardiac Share", 0.45f, 0f, 3f, "Pulse's share.");
+            CameraTremorShare  = F(Coupling, "Tremor Share", 0.04f, 0f, 3f, "Tremor's share. Keep this low or the view buzzes.");
+            CameraDriftShare   = F(Coupling, "Drift Share", 0.45f, 0f, 3f, "Postural drift's share.");
+            CameraInertiaShare = F(Coupling, "Inertia Share", 0.12f, 0f, 3f, "Inertia's share.");
 
             // ---- springs ---------------------------------------------------
             DriveGain = F(Springs, "Drive Gain", 8f, 0.1f, 60f,
@@ -420,6 +433,10 @@ namespace SptSway
             DebugOverlay   = cfg.Bind(Debug, "Overlay", false, "On-screen readout of every live value the model is using.");
             DebugKey       = cfg.Bind(Debug, "Overlay Key", new KeyboardShortcut(KeyCode.F11), "Toggles that readout.");
             VerboseLogging = cfg.Bind(Debug, "Verbose Logging", false, "Chatty console output. Useful when a value is not doing what you expect.");
+
+            // Written by the migration below. Not something to edit by hand.
+            Revision = cfg.Bind(Debug, "Settings Revision", 0,
+                "Which tuning pass this config file was last brought up to date with. Managed automatically.");
         }
 
         private static ConfigEntry<float> F(string section, string key, float def, float min, float max, string desc)

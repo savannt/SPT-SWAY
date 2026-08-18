@@ -33,8 +33,8 @@ that ticks through a scope, a fine shimmer that never stops, a lazy balance
 wander, and a heavy weapon lagging behind your turn. This mod models each of
 those separately and lets you turn every one of them up, down, or off.
 
-Roughly 150 config entries. That is not a boast, it is the point: if you can
-name a part of the sway you dislike, there is a number for it.
+Around 150 config entries. That is not a boast, it is the point: if you can name
+a part of the sway you dislike, there is a number for it.
 
 ---
 
@@ -131,8 +131,16 @@ A few things worth knowing before you start turning knobs:
   every complaint about sway is really a complaint about *one* of the five
   sources, so find that one.
 - **`Camera Coupling` decides where the sway goes.** At 0 the gun moves and your
-  view stays put. At 1 your head goes with it. The default 0.35 is a
-  compromise; if the mod feels nauseating, this is the knob, not the amplitudes.
+  view stays put. At 1 your head goes with it. This is the single most
+  consequential setting in the mod: if your view wanders while your hand is
+  still, or the whole thing feels nauseating, come here first and leave the
+  amplitudes alone. The default is deliberately low (0.10), and each source has
+  its own share underneath it — tremor's is near zero, because tremor on the
+  camera reads as a buzz rather than as a hand.
+- **`Output Smoothing` is the anti-jitter knob.** A low-pass across everything
+  the model produces, just before it reaches the springs. Lower is smoother and
+  eventually mushy; higher lets sharp detail like the pulse spike through. If
+  the sway feels shaky rather than alive, drop it before you touch anything else.
 - **`Drive Gain` is calibration, not taste.** It converts the model's output in
   degrees into the impulse BSG's springs want. Touch it only if the weapon feels
   like it's fighting the spring rather than riding it.

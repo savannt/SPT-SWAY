@@ -360,6 +360,8 @@ namespace SptSway.Runtime
         private Vector2 _lastAngles;
         private Vector3 _lastVelocity;
         private bool _primed;
+        private OnePole1 _yawRate;
+        private OnePole1 _pitchRate;
 
         public Vector3 Deflection => _x;
 
@@ -381,6 +383,14 @@ namespace SptSway.Runtime
 
             dYaw   = Mathf.Clamp(dYaw,   -clamp, clamp);
             dPitch = Mathf.Clamp(dPitch, -clamp, clamp);
+
+            // Turn rate is a difference between two frames, so it inherits the
+            // frame clock's jitter on top of the actual hand movement. Left raw
+            // it makes the weapon twitch when nothing moved, which reads as the
+            // mod being broken rather than as the weapon being heavy.
+            float inSmooth = SwayConfig.InertiaInputSmoothing.Value;
+            dYaw   = _yawRate.Filter(dYaw,     dt, inSmooth);
+            dPitch = _pitchRate.Filter(dPitch, dt, inSmooth);
 
             Vector3 accel = (playerVelocity - _lastVelocity) / Mathf.Max(dt, 0.0001f);
             _lastVelocity = playerVelocity;
@@ -445,6 +455,7 @@ namespace SptSway.Runtime
         public void Reset()
         {
             _x = Vector3.zero; _v = Vector3.zero; _target = Vector3.zero; _primed = false;
+            _yawRate.Reset(); _pitchRate.Reset();
         }
     }
 }

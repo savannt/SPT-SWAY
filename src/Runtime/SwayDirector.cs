@@ -1,5 +1,6 @@
 using EFT;
 using EFT.Animations;
+using SptSway.Util;
 using UnityEngine;
 
 namespace SptSway.Runtime
@@ -29,6 +30,9 @@ namespace SptSway.Runtime
         private float _holdFatigue;
         private float _shotCharge;
 
+        private OnePole _handsFilter;
+        private OnePole _cameraFilter;
+
         // last frame's output, kept for the debug overlay
         public Vector3 LastHands;
         public Vector3 LastCamera;
@@ -40,6 +44,8 @@ namespace SptSway.Runtime
         {
             _tuning.Reset();
             Inertia.Reset();
+            _handsFilter.Reset();
+            _cameraFilter.Reset();
         }
 
         public void OnShot()
@@ -107,6 +113,14 @@ namespace SptSway.Runtime
                 + drift   * SwayConfig.CameraDriftShare.Value
                 + inertia * SwayConfig.CameraInertiaShare.Value
             ) * (cc * global);
+
+            // One low-pass across the summed output rather than one per source.
+            // Filtering the sum keeps the sources in phase with each other; the
+            // per-source alternative would smear them apart in time and the
+            // breathing would stop lining up with the pulse riding on it.
+            float cutoff = SwayConfig.OutputSmoothing.Value;
+            handsSum  = _handsFilter.Filter(handsSum, dt, cutoff);
+            cameraSum = _cameraFilter.Filter(cameraSum, dt, cutoff);
 
             LastHands  = handsSum;
             LastCamera = cameraSum;
