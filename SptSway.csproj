@@ -1,0 +1,75 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>SptSway</AssemblyName>
+    <RootNamespace>SptSway</RootNamespace>
+    <Product>SPT-SWAY</Product>
+    <Description>Physically modelled weapon sway for SPT — respiration, cardiac pulse, physiological tremor, postural drift and weapon inertia, all separately tunable.</Description>
+    <Version>2.0.0</Version>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+
+    <SptInstallDir Condition="'$(SptInstallDir)' == '' and '$(SPT_INSTALL_DIR)' != ''">$(SPT_INSTALL_DIR)</SptInstallDir>
+    <SptInstallDir Condition="'$(SptInstallDir)' == ''">D:\SPT</SptInstallDir>
+    <GameManagedDir>$(SptInstallDir)\EscapeFromTarkov_Data\Managed</GameManagedDir>
+    <SptPluginDir>$(SptInstallDir)\BepInEx\plugins\spt</SptPluginDir>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="src\**\*.cs" />
+  </ItemGroup>
+
+  <Target Name="DeployToSpt" AfterTargets="PostBuildEvent" Condition="'$(NoBepInExCopy)' != 'true' AND Exists('$(SptInstallDir)\BepInEx\plugins')">
+    <MakeDir Directories="$(SptInstallDir)\BepInEx\plugins\SPT-SWAY" />
+    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll"
+          DestinationFolder="$(SptInstallDir)\BepInEx\plugins\SPT-SWAY"
+          OverwriteReadOnlyFiles="true" />
+    <Message Text="[SPT-SWAY] deployed to $(SptInstallDir)\BepInEx\plugins\SPT-SWAY" Importance="high" />
+  </Target>
+
+  <ItemGroup>
+    <Reference Include="spt-reflection">
+      <HintPath>$(SptPluginDir)\spt-reflection.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>$(GameManagedDir)\Assembly-CSharp.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="Comfort">
+      <HintPath>$(GameManagedDir)\Comfort.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>$(GameManagedDir)\UnityEngine.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>$(GameManagedDir)\UnityEngine.CoreModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.InputLegacyModule">
+      <HintPath>$(GameManagedDir)\UnityEngine.InputLegacyModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>$(GameManagedDir)\UnityEngine.TextRenderingModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>$(GameManagedDir)\UnityEngine.IMGUIModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>$(GameManagedDir)\UnityEngine.PhysicsModule.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <PackageReference Include="BepInEx.Core" Version="5.*" />
+    <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
+  </ItemGroup>
+
+</Project>
