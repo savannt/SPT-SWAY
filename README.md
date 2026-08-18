@@ -1,5 +1,27 @@
 # SPT-SWAY
 
+---
+
+# 🟣 JOIN THE DISCORD — https://discord.gg/nxa3W7w4rJ
+
+### **https://discord.gg/nxa3W7w4rJ**
+
+**This is the single most important link in this README.** All updates, release
+announcements, bug fixes, early builds and support happen in the Discord **first**.
+If you run this mod, join it — it is the only place you will reliably hear about
+breaking changes and new versions.
+
+**What's coming next:** I am building a **post-1.0 patcher and backend, written
+from scratch and engineered to be very performant** — a proper foundation instead
+of the current patchwork. **All of these mods will shortly be merged into that new
+system.** If you want to follow that work, or use it when it lands, the Discord is
+where it will be announced.
+
+### 👉 **https://discord.gg/nxa3W7w4rJ** 👈
+
+---
+
+
 Weapon sway for SPT, built from the physical sources that actually move a rifle
 instead of from a sine wave with a nice name.
 
